@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 """
+Binary Counter
 Matthew Hayes
 HYSMAT002
 Prac no. 1
@@ -64,9 +65,11 @@ if __name__ == "__main__":
 	print("Exiting gracefully")
         # Turn off your GPIOs here
         GPIO.cleanup()
-#    except:
-#	print ("Some other error occurred")
-#	GPIO.cleanup()
+    except e:
+	GPIO.cleanup()
+
+	print("Error: ")
+	print (e.message)
     # End if __name__ == "__main__"
 
 # End

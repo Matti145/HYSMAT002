@@ -12,26 +12,47 @@ import RPi.GPIO as GPIO
 
 
 led = 0
-count = 0
+count = 000
+
+bit1 = 17
+bit2 = 27
+bit3 = 22
+
+debounceTime = 300
 
 def buttonPressed(val):
     global led
     global count
-   # print ("Button Pressed!")
-    if led:
-	led =  0
+    if val == 18:
+	count += 1
     else:
-	led =  1
-
+	if count > 0:
+            count -= 1
+	else:
+            count = 3
+    # end of buttonPressed
 
 def init():
     GPIO.setmode(GPIO.BCM)
-    GPIO.setup(17, GPIO.OUT) # set BCM 17 as output
+
+    # Outputs
+    GPIO.setup(bit1, GPIO.OUT) # set BCM 17 as output
+    GPIO.setup(bit2, GPIO.OUT)
+    GPIO.setup(bit3, GPIO.OUT)
+
+
+    # Inputs
     GPIO.setup(18, GPIO.IN, pull_up_down=GPIO.PUD_DOWN) # set BCM as input with a pull down resistor
-    GPIO.add_event_detect(18, GPIO.RISING, callback=buttonPressed, bouncetime=300)
+    GPIO.add_event_detect(18, GPIO.RISING, callback=buttonPressed, bouncetime=debounceTime) # set up interupt and debounce
+    GPIO.setup(23, GPIO.IN, pull_up_down=GPIO.PUD_DOWN) # set BCM as input with a pull down resistor
+    GPIO.add_event_detect(23, GPIO.RISING, callback=buttonPressed, bouncetime=debounceTime) # set up interupt and debounce
+    # End of init
 
 def main():
-    GPIO.output(17, led)
+    binary = bin( count + int('1000000',2))
+    GPIO.output(bit1, int(binary[-1]))
+    GPIO.output(bit2, int(binary[-2]))
+    GPIO.output(bit3, int(binary[-3]))
     #End of main
 
 if __name__ == "__main__":
@@ -43,9 +64,9 @@ if __name__ == "__main__":
 	print("Exiting gracefully")
         # Turn off your GPIOs here
         GPIO.cleanup()
-    except:
-	print ("Some other error occurred")
-	GPIO.cleanup()
+#    except:
+#	print ("Some other error occurred")
+#	GPIO.cleanup()
     # End if __name__ == "__main__"
 
 # End

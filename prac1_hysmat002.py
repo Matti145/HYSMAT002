@@ -11,16 +11,18 @@ Prac no. 1
 import RPi.GPIO as GPIO
 import time
 
-led = 0
+
 count = 0
 
-bit = [17, 27, 22]
+bit = [17, 27, 22] # pin numbers that will turn on the LEDs to represent the bits
 states = [[0,0,0], [1,0,0], [0,1,0], [1,1,0], [0,0,1], [1,0,1], [0,1,1], [1,1,1] ]
 debounceTime = 300
 
 def buttonPressed(val):
+    # Callback method for the button interrupts.
     global led
     global count
+    # Check which button was pressed.
     if val == 18:
 	if count < 7:
 	    count += 1
@@ -41,9 +43,9 @@ def init():
     # Outputs
     GPIO.setup(bit, GPIO.OUT)
     # Inputs
-    GPIO.setup(18, GPIO.IN, pull_up_down=GPIO.PUD_DOWN) # set BCM as input with a pull down resistor
+    GPIO.setup(18, GPIO.IN, pull_up_down=GPIO.PUD_DOWN) # set BCM 18 as input with a pull down resistor
     GPIO.add_event_detect(18, GPIO.RISING, callback=buttonPressed, bouncetime=debounceTime) # set up interupt and debounce
-    GPIO.setup(23, GPIO.IN, pull_up_down=GPIO.PUD_DOWN) # set BCM as input with a pull down resistor
+    GPIO.setup(23, GPIO.IN, pull_up_down=GPIO.PUD_DOWN) # set BCM 23 as input with a pull down resistor
     GPIO.add_event_detect(23, GPIO.RISING, callback=buttonPressed, bouncetime=debounceTime) # set up interupt and debounce
     # End of init
 
@@ -63,7 +65,6 @@ if __name__ == "__main__":
         GPIO.cleanup()
     except e:
 	GPIO.cleanup()
-
 	print("Error: ")
 	print (e.message)
     # End if __name__ == "__main__"

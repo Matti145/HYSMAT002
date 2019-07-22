@@ -5,43 +5,41 @@ Binary Counter
 Matthew Hayes
 HYSMAT002
 Prac no. 1
-/07/2019
+22/07/2019
 """
 
-
 import RPi.GPIO as GPIO
-
+import time
 
 led = 0
-count = 000
+count = 0
 
-bit1 = 17
-bit2 = 27
-bit3 = 22
-
+bit = [17, 27, 22]
+states = [[0,0,0], [1,0,0], [0,1,0], [1,1,0], [0,0,1], [1,0,1], [0,1,1], [1,1,1] ]
 debounceTime = 300
 
 def buttonPressed(val):
     global led
     global count
     if val == 18:
-	count += 1
+	if count < 7:
+	    count += 1
+        else:
+	    count = 0
     else:
 	if count > 0:
             count -= 1
 	else:
-            count = 3
+            count = 7
+
+    GPIO.output(bit, states[count])
     # end of buttonPressed
 
 def init():
     GPIO.setmode(GPIO.BCM)
 
     # Outputs
-    GPIO.setup(bit1, GPIO.OUT) # set BCM 17 as output
-    GPIO.setup(bit2, GPIO.OUT)
-    GPIO.setup(bit3, GPIO.OUT)
-
-
+    GPIO.setup(bit, GPIO.OUT)
     # Inputs
     GPIO.setup(18, GPIO.IN, pull_up_down=GPIO.PUD_DOWN) # set BCM as input with a pull down resistor
     GPIO.add_event_detect(18, GPIO.RISING, callback=buttonPressed, bouncetime=debounceTime) # set up interupt and debounce
@@ -50,16 +48,14 @@ def init():
     # End of init
 
 def main():
-    binary = bin( count + int('1000000',2))
-    GPIO.output(bit1, int(binary[-1]))
-    GPIO.output(bit2, int(binary[-2]))
-    GPIO.output(bit3, int(binary[-3]))
+    # Allow for something else to be done
+    time.sleep(60)
     #End of main
 
 if __name__ == "__main__":
     try:
 	init()
-	while True:
+	while (True):
 	    main()
     except KeyboardInterrupt:
 	print("Exiting gracefully")
